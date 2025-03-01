@@ -1,0 +1,46 @@
+import dotenv from "dotenv";
+import { z } from "zod";
+import chalk from "chalk";
+import boxen from "boxen";
+
+dotenv.config();
+
+// Define environment schema
+const envSchema = z.object({
+  BASE_URL: z.string().url(),
+  TOKEN: z.string(),
+  CHARACTER: z.string(),
+  ACCOUNT_NAME: z.string(),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
+});
+
+// Validate environment variables
+const envValidated = envSchema.safeParse({
+  NODE_ENV: process.env.NODE_ENV,
+  TOKEN: process.env.TOKEN,
+  CHARACTER: process.env.CHARACTER,
+  ACCOUNT_NAME: process.env.ACCOUNT_NAME,
+  BASE_URL: process.env.BASE_URL,
+});
+
+if (!envValidated.success) {
+  console.error(
+    boxen(
+      chalk.red("❌ Missing or Invalid Env:\n") +
+        envValidated.error.issues
+          .map(
+            (err) =>
+              `${chalk.yellow(err.path.join("."))}: ${chalk.red(err.message)}`
+          )
+          .join("\n"),
+      { padding: 1, borderColor: "red", borderStyle: "round" }
+    )
+  );
+
+  process.exit(1);
+}
+
+// Export validated env
+export const env = envValidated.data;
