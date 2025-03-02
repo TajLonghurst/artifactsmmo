@@ -1,6 +1,8 @@
+import { AxiosError } from "axios";
 import { Character, Cooldown, UnEquipItem, Slot } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 import character from "./character";
+import { errorCode } from "../../utils/errorCodes";
 
 type Data = {
   data: {
@@ -40,10 +42,17 @@ export default async function unequip(
       character: response.data.data.character,
     };
   } catch (err: any) {
-    console.error("UnEquip API Error:", err.response.status);
+    if (err instanceof AxiosError) {
+      const statusCode = err.response?.status;
+      const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
+
+      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
+    } else {
+      console.error("Unexpected Error:", err);
+    }
 
     return {
-      status: err.response.status,
+      status: err.response?.status || 500, // Fallback to 500 if response is missing
     };
   }
 }

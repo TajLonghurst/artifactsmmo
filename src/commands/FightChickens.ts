@@ -1,4 +1,3 @@
-import { env } from "../../env";
 import {
   fight,
   movement,
@@ -8,28 +7,8 @@ import {
 import { cooldownDelay } from "../utils/cooldownDelay";
 
 const FightChickens = async (character: string) => {
-  const {
-    status: statusCharacterStats,
-    cooldown: cooldownCharacterStats,
-    character: characterCharacterStats,
-  } = await characterStats(env.CHARACTER_ONE);
-
-  if (cooldownCharacterStats && statusCharacterStats === 200) {
-    console.log("Cooldown Character API", cooldownCharacterStats);
-    await cooldownDelay(cooldownCharacterStats);
-    if (characterCharacterStats!.hp < characterCharacterStats!.max_hp) {
-      await restFighter(character);
-    }
-  }
-
-  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
-    character,
-    { x: 0, y: 1 }
-  );
-
-  if (statusMovement === 200) {
-    await cooldownDelay(cooldownMovement!.total_seconds);
-  }
+  await preSetUp(character);
+  await moveToLocation(character);
 
   fighting(character);
 };
@@ -61,19 +40,45 @@ const fighting = async (character: string) => {
       characterFight.hp < 0.3 * characterFight!.max_hp; //If players health is at 30% hp
 
     if (isLowHealth) {
-      console.log("RESET 30%");
       await restFighter(character);
     }
-    setTimeout(() => fighting(character), 0);
+    await fighting(character);
   }
 };
 
 const restFighter = async (character: string) => {
-  const { status: statusRest, cooldown: cooldownRest } = await rest(character);
-
-  //   currentCooldown = cooldownRest!.total_seconds;
-  console.log("Resting", statusRest);
+  const { cooldown: cooldownRest } = await rest(character);
   await cooldownDelay(cooldownRest!.total_seconds);
+};
+
+const preSetUp = async (character: string) => {
+  const {
+    status: statusCharacterStats,
+    cooldown: cooldownCharacterStats,
+    character: characterCharacterStats,
+  } = await characterStats(character);
+
+  if (cooldownCharacterStats && statusCharacterStats === 200) {
+    console.log(
+      character + " " + "Character Current Cooldown",
+      cooldownCharacterStats
+    );
+    await cooldownDelay(cooldownCharacterStats);
+    if (characterCharacterStats!.hp < characterCharacterStats!.max_hp) {
+      await restFighter(character);
+    }
+  }
+};
+
+const moveToLocation = async (character: string) => {
+  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
+    character,
+    { x: 0, y: 1 }
+  );
+
+  if (statusMovement === 200) {
+    await cooldownDelay(cooldownMovement!.total_seconds);
+  }
 };
 
 export default FightChickens;

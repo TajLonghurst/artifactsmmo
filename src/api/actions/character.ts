@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Character, Cooldown } from "../../types/types";
 import { env } from "../../../env";
+import { errorCode } from "../../utils/errorCodes";
 
 type Data = {
   data: Character[];
@@ -34,10 +35,10 @@ export default async function character(character: string) {
     };
   } catch (err: any) {
     if (err instanceof AxiosError) {
-      console.error(
-        "Character API Error:",
-        err.response?.status || "Unknown error"
-      );
+      const statusCode = err.response?.status;
+      const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
+
+      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
     } else {
       console.error("Unexpected Error:", err);
     }

@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { Character, Cooldown, Destination } from "../../types/types";
 import { createApiActionInstance } from "../apis";
+import { errorCode } from "../../utils/errorCodes";
 
 type Data = {
   data: {
@@ -39,10 +40,9 @@ export default async function movement(
   } catch (err: any) {
     if (err instanceof AxiosError) {
       const statusCode = err.response?.status;
+      const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      if (statusCode === 490) {
-        console.error(`${character} already on map title`);
-      }
+      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
     } else {
       console.error("Unexpected Error:", err);
     }

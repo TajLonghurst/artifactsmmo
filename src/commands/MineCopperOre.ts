@@ -1,17 +1,29 @@
-import { gathering, movement } from "../api/actions";
+import {
+  gathering,
+  movement,
+  character as characterStats,
+} from "../api/actions";
 import { cooldownDelay } from "../utils/cooldownDelay";
 
-let currentCooldown: number;
-
 const MineCopperOre = async (character: string) => {
+  const { status: statusCharacterStats, cooldown: cooldownCharacterStats } =
+    await characterStats(character);
+
+  if (cooldownCharacterStats && statusCharacterStats === 200) {
+    console.log(
+      character + " " + "Character Current Cooldown",
+      cooldownCharacterStats
+    );
+    await cooldownDelay(cooldownCharacterStats);
+  }
+
   const { status: statusMovement, cooldown: cooldownMovement } = await movement(
     character,
     { x: 2, y: 0 }
   );
 
   if (statusMovement === 200) {
-    currentCooldown = cooldownMovement!.total_seconds;
-    await cooldownDelay(currentCooldown);
+    await cooldownDelay(cooldownMovement!.total_seconds);
   }
 
   mining(character);
@@ -24,7 +36,6 @@ const mining = async (character: string) => {
     character: characterGathering,
   } = await gathering(character);
 
-  currentCooldown = cooldown!.total_seconds;
   console.log("Collect Ore", status);
 
   const totalItems = characterGathering?.inventory.reduce(
@@ -38,7 +49,7 @@ const mining = async (character: string) => {
   }
 
   if (status === 200) {
-    setTimeout(() => mining(character), currentCooldown * 1000);
+    setTimeout(() => mining(character), cooldown!.total_seconds * 1000);
   }
 };
 

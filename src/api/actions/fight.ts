@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { Character, Cooldown, Fight } from "../../types/types";
 import { createApiActionInstance } from "../apis";
+import { errorCode } from "../../utils/errorCodes";
 
 type Data = {
   data: {
@@ -31,10 +32,10 @@ export default async function fight(character: string): Promise<ApiResponse> {
     };
   } catch (err: any) {
     if (err instanceof AxiosError) {
-      console.error(
-        "Fighting API Error:",
-        err.response?.status || "Unknown error"
-      );
+      const statusCode = err.response?.status;
+      const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
+
+      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
     } else {
       console.error("Unexpected Error:", err);
     }
