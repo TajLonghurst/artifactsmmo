@@ -1,13 +1,13 @@
 import { movement } from "../api/actions";
 import map from "../api/map/map";
 import resources from "../api/resources/ resources";
-import { Drops } from "../types/types";
+import { ResourceDrops } from "../types/types";
 import { cooldownDelay } from "./cooldownDelay";
 
 interface IMoveToResourceLocation {
   character: string;
   query: {
-    drop: Drops;
+    drop: ResourceDrops;
   };
 }
 
@@ -22,7 +22,7 @@ export const moveToResourceLocation = async ({
   });
 
   if (statusResource !== 200) {
-    console.log("Failed to find Resource");
+    console.log("Failed to find resource drop");
     return;
   }
 
@@ -31,7 +31,7 @@ export const moveToResourceLocation = async ({
   const coordinates = await map({ querys: { content_code: location } });
 
   if (!coordinates) {
-    console.error("Failed to find map location");
+    console.error("Failed to find map resource location");
     return;
   }
 

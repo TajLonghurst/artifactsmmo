@@ -188,7 +188,7 @@ export interface UnEquipItem {
   tradeable: boolean;
 }
 
-export type Drops =
+export type ResourceDrops =
   | "ash_wood"
   | "sap"
   | "gudgeon"
@@ -225,3 +225,82 @@ export type Drops =
   | "golden_chalice"
   | "glowstem_leaf"
   | "mithril_ore";
+
+export type MonsterDrops =
+  | "raw_chicken"
+  | "egg"
+  | "feather"
+  | "golden_egg"
+  | "yellow_slimeball"
+  | "apple"
+  | "green_slimeball"
+  | "blue_slimeball"
+  | "red_slimeball"
+  | "raw_beef"
+  | "milk_bucket"
+  | "cowhide"
+  | "mushroom"
+  | "forest_ring"
+  | "flying_wing"
+  | "serpent_skin"
+  | "wolf_ears"
+  | "raw_wolf_meat"
+  | "wolf_bone"
+  | "wolf_hair"
+  | "highwayman_dagger"
+  | "green_cloth"
+  | "skeleton_bone"
+  | "skeleton_skull";
+
+export type Monsters = {
+  data: {
+    name: string;
+    code: string;
+    level: number;
+    hp: number;
+    attack_fire: number;
+    attack_earth: number;
+    attack_water: number;
+    attack_air: number;
+    res_fire: number;
+    res_earth: number;
+    res_water: number;
+    res_air: number;
+    critical_strike: number;
+    effects: {
+      code: string;
+      value: number;
+    }[];
+    min_gold: number;
+    max_gold: number;
+    drops: {
+      code: string;
+      rate: number;
+      min_quantity: number;
+      max_quantity: number;
+    }[];
+  }[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+};
+
+export type Resources = {
+  data: {
+    name: string;
+    code: string;
+    skill: string;
+    level: number;
+    drops: {
+      code: string;
+      rate: number;
+      min_quantity: number;
+      max_quantity: number;
+    }[];
+  }[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+};

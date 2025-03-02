@@ -1,9 +1,9 @@
 import { AxiosError } from "axios";
 import { errorCode } from "../../utils/errorCodes";
 import { apiMap as api } from "../apis";
-import { Resources } from "../../types/types";
+import { Monsters } from "../../types/types";
 
-interface IResources {
+interface IMonster {
   querys?: {
     drop?: string;
     max_level?: number;
@@ -13,13 +13,13 @@ interface IResources {
 }
 
 type ApiResponse = {
-  data?: Resources;
+  data?: Monsters;
   status: number;
 };
 
-export default async function resources({
+export default async function monsters({
   querys = {},
-}: IResources): Promise<ApiResponse> {
+}: IMonster): Promise<ApiResponse> {
   const params = new URLSearchParams();
   const { drop, max_level, min_level, page = 1 } = querys;
 
@@ -28,10 +28,10 @@ export default async function resources({
   if (min_level) params.append("min_level", String(min_level));
   if (page) params.append("page", String(page));
 
-  const url = `/resources?${params.toString()}`;
+  const url = `/monsters?${params.toString()}`;
 
   try {
-    const response = await api.get<Resources>(url);
+    const response = await api.get<Monsters>(url);
 
     return { data: response.data, status: response.status };
   } catch (err: any) {

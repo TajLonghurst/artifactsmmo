@@ -1,13 +1,12 @@
 import { env } from "../env.ts";
-import map from "./api/map/map.ts";
 import resources from "./api/resources/ resources.ts";
-import FightChickens from "./commands/FightChickens.ts";
+import FightMonster from "./commands/FightMonster.ts";
 import MineResource from "./commands/MineResource.ts";
 
-const Brains = () => {
-  MineResource(env.CHARACTER, { drop: "copper_ore" });
-  // MineCopperOre(env.CHARACTER_ONE);
-  // FightChickens(env.CHARACTER);
+const Brains = async () => {
+  MineResource(env.CHARACTER_ONE, { drop: "copper_ore" });
+  FightMonster(env.CHARACTER, { drop: "feather" });
 };
 
 Brains();
+//! handle all 500 as redo api call

@@ -4,11 +4,16 @@ import {
   rest,
   character as characterStats,
 } from "../api/actions";
+import { MonsterDrops } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
+import { moveToMonsterLocation } from "../utils/moveToMonsterLocation";
 
-const FightChickens = async (character: string) => {
+const FightMonster = async (
+  character: string,
+  query: { drop: MonsterDrops }
+) => {
   await preSetUp(character);
-  await moveToLocation(character);
+  await moveToMonsterLocation({ character, query });
 
   fighting(character);
 };
@@ -71,15 +76,4 @@ const preSetUp = async (character: string) => {
   }
 };
 
-const moveToLocation = async (character: string) => {
-  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
-    character,
-    { x: 0, y: 1 }
-  );
-
-  if (statusMovement === 200) {
-    await cooldownDelay(cooldownMovement!.total_seconds);
-  }
-};
-
-export default FightChickens;
+export default FightMonster;

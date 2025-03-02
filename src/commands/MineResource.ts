@@ -3,11 +3,14 @@ import {
   movement,
   character as characterStats,
 } from "../api/actions";
-import { Drops } from "../types/types";
+import { ResourceDrops } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
-import { moveToResourceLocation } from "../utils/moveToLocation";
+import { moveToResourceLocation } from "../utils/moveToResourceLocation";
 
-const MineResource = async (character: string, query: { drop: Drops }) => {
+const MineResource = async (
+  character: string,
+  query: { drop: ResourceDrops }
+) => {
   await preSetUp(character);
   await moveToResourceLocation({ character, query });
 
