@@ -55,7 +55,9 @@ export default async function equip(
       const statusCode = err.response?.status;
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
+      console.error(
+        `Error Equip API: ${character} ${errorKey}` + " " + statusCode
+      );
     } else {
       console.error("Unexpected Error:", err);
     }

@@ -42,13 +42,15 @@ export default async function crafting(
       const statusCode = err.response?.status;
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
+      console.error(
+        `Error Crafting API: ${character} ${errorKey}` + " " + statusCode
+      );
     } else {
       console.error("Unexpected Error:", err);
     }
 
     return {
-      status: err.response?.status || 500, // Fallback to 500 if response is missing
+      status: err.status || 500, // Fallback to 500 if response is missing
     };
   }
 }

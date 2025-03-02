@@ -36,7 +36,9 @@ export default async function gathering(
       const statusCode = err.response?.status;
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
+      console.error(
+        `Error Gathering API: ${character} ${errorKey}` + " " + statusCode
+      );
       return {
         status: statusCode ?? 500, // Fallback to 500 if response is missing
       };
