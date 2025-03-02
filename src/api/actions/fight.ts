@@ -35,13 +35,13 @@ export default async function fight(character: string): Promise<ApiResponse> {
       const statusCode = err.response?.status;
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
+      console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
     } else {
       console.error("Unexpected Error:", err);
     }
 
     return {
-      status: err.response?.status || 500, // Fallback to 500 if response is missing
+      status: 2001, // Fallback to 500 if response is missing
     };
   }
 }

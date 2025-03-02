@@ -1,10 +1,13 @@
 import { env } from "../env.ts";
+import map from "./api/map/map.ts";
+import resources from "./api/resources/ resources.ts";
 import FightChickens from "./commands/FightChickens.ts";
-import MineCopperOre from "./commands/MineCopperOre.ts";
+import MineResource from "./commands/MineResource.ts";
 
 const Brains = () => {
-  MineCopperOre(env.CHARACTER_ONE);
-  FightChickens(env.CHARACTER);
+  MineResource(env.CHARACTER, { dropType: "copper_ore" });
+  // MineCopperOre(env.CHARACTER_ONE);
+  // FightChickens(env.CHARACTER);
 };
 
 Brains();

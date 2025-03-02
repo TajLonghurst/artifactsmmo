@@ -17,24 +17,28 @@ interface IMap {
 }
 
 type Data = {
-  code: string;
-  level: number;
-  type: "monsters" | "items";
-  min_quantity: number;
-  max_quantity: number;
-  skill: string;
-  rewards: {
-    items: {
+  data: {
+    name: string;
+    skin: string;
+    x: number;
+    y: number;
+    content: {
+      type:
+        | "monster"
+        | "resource"
+        | "workshop"
+        | "bank"
+        | "grand_exchange"
+        | "tasks_master"
+        | "npc";
       code: string;
-      quantity: number;
-    }[];
-    gold: number;
-  };
+    } | null;
+  }[];
   total: number;
   page: number;
   size: number;
   pages: number;
-}[];
+};
 
 type ApiResponse = Data | undefined;
 

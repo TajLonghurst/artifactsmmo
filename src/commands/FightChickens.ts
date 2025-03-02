@@ -58,12 +58,13 @@ const preSetUp = async (character: string) => {
     character: characterCharacterStats,
   } = await characterStats(character);
 
-  if (cooldownCharacterStats && statusCharacterStats === 200) {
+  if (statusCharacterStats === 200) {
     console.log(
       character + " " + "Character Current Cooldown",
       cooldownCharacterStats
     );
-    await cooldownDelay(cooldownCharacterStats);
+
+    await cooldownDelay(cooldownCharacterStats!);
     if (characterCharacterStats!.hp < characterCharacterStats!.max_hp) {
       await restFighter(character);
     }

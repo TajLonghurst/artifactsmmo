@@ -46,7 +46,7 @@ export default async function unequip(
       const statusCode = err.response?.status;
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
-      console.error(`Error: ${character} ${errorKey} (${statusCode})`);
+      console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
     } else {
       console.error("Unexpected Error:", err);
     }
