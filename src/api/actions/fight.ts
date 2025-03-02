@@ -1,5 +1,5 @@
 import { Character, Cooldown, Fight } from "../../types/types";
-import { apiActions as api } from "../apis";
+import { createApiActionInstance } from "../apis";
 
 type Data = {
   data: {
@@ -16,7 +16,9 @@ interface ApiResponse {
   character?: Character;
 }
 
-export default async function fight(): Promise<ApiResponse> {
+export default async function fight(character: string): Promise<ApiResponse> {
+  const api = createApiActionInstance(character);
+
   try {
     const response = await api.post<Data>("/action/fight");
 

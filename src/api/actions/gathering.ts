@@ -1,5 +1,6 @@
+import { Axios, AxiosError } from "axios";
 import { Character, Cooldown, Details } from "../../types/types";
-import { apiActions as api } from "../apis";
+import { createApiActionInstance } from "../apis";
 
 type Data = {
   data: {
@@ -16,7 +17,10 @@ interface ApiResponse {
   character?: Character;
 }
 
-export default async function gathering(): Promise<ApiResponse> {
+export default async function gathering(
+  character: string
+): Promise<ApiResponse> {
+  const api = createApiActionInstance(character);
   try {
     const response = await api.post<Data>("/action/gathering");
 
@@ -27,10 +31,17 @@ export default async function gathering(): Promise<ApiResponse> {
       details: response.data?.data.details,
     };
   } catch (err: any) {
-    console.error("Gathering API Error:", err.response.status);
+    if (err instanceof AxiosError) {
+      console.error(
+        "Gathering API Error:",
+        err.response?.status || "Unknown error"
+      );
+    } else {
+      console.error("Unexpected Error:", err);
+    }
 
     return {
-      status: err.response.status,
+      status: err.response?.status || 500, // Fallback to 500 if response is missing
     };
   }
 }

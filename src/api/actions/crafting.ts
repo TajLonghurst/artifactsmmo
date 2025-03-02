@@ -1,5 +1,5 @@
 import { Character, Cooldown, Details } from "../../types/types";
-import { apiActions as api } from "../apis";
+import { createApiActionInstance } from "../apis";
 
 type Data = {
   data: {
@@ -17,11 +17,15 @@ interface ApiResponse {
 }
 
 export default async function crafting(
-  code: string,
-  quantity: number
+  character: string,
+  values: {
+    code: string;
+    quantity: number;
+  }
 ): Promise<ApiResponse> {
   try {
-    const body = { code, quantity };
+    const api = createApiActionInstance(character);
+    const body = { code: values.code, values: values.quantity };
 
     const response = await api.post<Data>("/action/crafting", body);
 

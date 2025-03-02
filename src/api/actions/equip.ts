@@ -4,7 +4,7 @@ import {
   UnEquipItem as EquipItem,
   Slot,
 } from "../../types/types";
-import { apiActions as api } from "../apis";
+import { createApiActionInstance } from "../apis";
 
 type Data = {
   data: {
@@ -24,11 +24,19 @@ interface ApiResponse {
 }
 
 export default async function equip(
-  slot: string,
-  quantity: number,
-  code?: string
+  character: string,
+  values: {
+    slot: string;
+    quantity: number;
+    code?: string;
+  }
 ): Promise<ApiResponse> {
-  const body = { slot, quantity, code };
+  const api = createApiActionInstance(character);
+  const body = {
+    slo: values.slot,
+    quantity: values.quantity,
+    code: values.code,
+  };
 
   try {
     const response = await api.post<Data>("/action/equip", body);

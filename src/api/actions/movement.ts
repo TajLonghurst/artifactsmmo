@@ -1,5 +1,5 @@
 import { Character, Cooldown, Destination } from "../../types/types";
-import { apiActions as api } from "../apis";
+import { createApiActionInstance } from "../apis";
 
 type Data = {
   data: {
@@ -17,10 +17,14 @@ interface ApiResponse {
 }
 
 export default async function movement(
-  xAxis: number,
-  yAxis: number
+  character: string,
+  axis: {
+    x: number;
+    y: number;
+  }
 ): Promise<ApiResponse> {
-  const body = { x: xAxis, y: yAxis };
+  const api = createApiActionInstance(character);
+  const body = { x: axis.x, y: axis.y };
 
   try {
     const response = await api.post<Data>("/action/move", body);

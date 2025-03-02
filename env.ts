@@ -10,6 +10,10 @@ const envSchema = z.object({
   BASE_URL: z.string().url(),
   TOKEN: z.string(),
   CHARACTER: z.string(),
+  CHARACTER_ONE: z.string(),
+  CHARACTER_TWO: z.string(),
+  CHARACTER_THREE: z.string(),
+  CHARACTER_FOUR: z.string(),
   ACCOUNT_NAME: z.string(),
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -21,6 +25,10 @@ const envValidated = envSchema.safeParse({
   NODE_ENV: process.env.NODE_ENV,
   TOKEN: process.env.TOKEN,
   CHARACTER: process.env.CHARACTER,
+  CHARACTER_ONE: process.env.CHARACTER_ONE,
+  CHARACTER_TWO: process.env.CHARACTER_TWO,
+  CHARACTER_THREE: process.env.CHARACTER_THREE,
+  CHARACTER_FOUR: process.env.CHARACTER_FOUR,
   ACCOUNT_NAME: process.env.ACCOUNT_NAME,
   BASE_URL: process.env.BASE_URL,
 });
