@@ -1,10 +1,9 @@
 import axios, { AxiosError } from "axios";
 import { Character, Cooldown } from "../../types/types";
+import { env } from "../../../env";
 
 type Data = {
-  data: {
-    character: Character;
-  };
+  data: Character[];
 };
 
 interface ApiResponse {
@@ -13,23 +12,30 @@ interface ApiResponse {
   cooldown?: Character["cooldown"];
 }
 
-export default async function character(
-  character: string
-): Promise<ApiResponse> {
+export default async function character(character: string) {
   try {
-    const response = await axios.get<Data>(
-      "https://api.artifactsmmo.com/my/characters"
-    );
+    const response = await axios.get<Data>("/my/characters", {
+      baseURL: env.BASE_URL,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${env.TOKEN}`,
+      },
+    });
+
+    const getCharacter = response.data.data
+      .filter((char) => char.name === character)
+      .pop();
 
     return {
       status: response.status,
-      character: response.data.data.character,
-      cooldown: response.data.data.character.cooldown,
+      character: getCharacter,
+      cooldown: getCharacter?.cooldown,
     };
   } catch (err: any) {
     if (err instanceof AxiosError) {
       console.error(
-        "Gathering API Error:",
+        "Character API Error:",
         err.response?.status || "Unknown error"
       );
     } else {

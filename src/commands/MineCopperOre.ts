@@ -33,7 +33,7 @@ const mining = async (character: string) => {
   );
 
   if (totalItems === 100) {
-    console.log("Inventory Maxed");
+    console.log("Inventory Maxed", character);
     return;
   }
 

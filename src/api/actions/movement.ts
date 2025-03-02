@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { Character, Cooldown, Destination } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 
@@ -36,9 +37,18 @@ export default async function movement(
       character: response.data.data.character,
     };
   } catch (err: any) {
-    console.error("Movement API Error:", err.response.status);
+    if (err instanceof AxiosError) {
+      const statusCode = err.response?.status;
+
+      if (statusCode === 490) {
+        console.error(`${character} already on map title`);
+      }
+    } else {
+      console.error("Unexpected Error:", err);
+    }
+
     return {
-      status: err.response.status,
+      status: err.response?.status || 500, // Fallback to 500 if response is missing
     };
   }
 }

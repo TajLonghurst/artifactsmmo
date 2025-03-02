@@ -32,7 +32,7 @@ export default async function fight(character: string): Promise<ApiResponse> {
   } catch (err: any) {
     if (err instanceof AxiosError) {
       console.error(
-        "Gathering API Error:",
+        "Fighting API Error:",
         err.response?.status || "Unknown error"
       );
     } else {
