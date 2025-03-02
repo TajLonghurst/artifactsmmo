@@ -37,12 +37,14 @@ export default async function gathering(
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
       console.error(`Error: ${character} ${errorKey}` + " " + statusCode);
+      return {
+        status: statusCode ?? 500, // Fallback to 500 if response is missing
+      };
     } else {
       console.error("Unexpected Error:", err);
     }
-
-    return {
-      status: 500, // Fallback to 500 if response is missing
-    };
   }
+  return {
+    status: 500,
+  };
 }

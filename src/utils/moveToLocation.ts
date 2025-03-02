@@ -1,12 +1,13 @@
 import { movement } from "../api/actions";
 import map from "../api/map/map";
 import resources from "../api/resources/ resources";
+import { Drops } from "../types/types";
 import { cooldownDelay } from "./cooldownDelay";
 
 interface IMoveToResourceLocation {
   character: string;
   query: {
-    dropType: string;
+    drop: Drops;
   };
 }
 
@@ -14,10 +15,10 @@ export const moveToResourceLocation = async ({
   character,
   query,
 }: IMoveToResourceLocation) => {
-  const { dropType } = query;
+  const { drop } = query;
 
   const { data, status: statusResource } = await resources({
-    querys: { drop: dropType },
+    querys: { drop: drop },
   });
 
   if (statusResource !== 200) {

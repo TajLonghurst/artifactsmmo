@@ -5,7 +5,7 @@ import FightChickens from "./commands/FightChickens.ts";
 import MineResource from "./commands/MineResource.ts";
 
 const Brains = () => {
-  MineResource(env.CHARACTER, { dropType: "copper_ore" });
+  MineResource(env.CHARACTER, { drop: "copper_ore" });
   // MineCopperOre(env.CHARACTER_ONE);
   // FightChickens(env.CHARACTER);
 };
