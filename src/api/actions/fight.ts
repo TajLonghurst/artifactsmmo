@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { Character, Cooldown, Fight } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 
@@ -29,9 +30,17 @@ export default async function fight(character: string): Promise<ApiResponse> {
       fight: response.data.data.fight,
     };
   } catch (err: any) {
-    console.error("Fight API Error:", err.response.status);
+    if (err instanceof AxiosError) {
+      console.error(
+        "Gathering API Error:",
+        err.response?.status || "Unknown error"
+      );
+    } else {
+      console.error("Unexpected Error:", err);
+    }
+
     return {
-      status: err.response.status,
+      status: err.response?.status || 500, // Fallback to 500 if response is missing
     };
   }
 }
