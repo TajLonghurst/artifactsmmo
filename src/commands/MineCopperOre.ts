@@ -6,25 +6,8 @@ import {
 import { cooldownDelay } from "../utils/cooldownDelay";
 
 const MineCopperOre = async (character: string) => {
-  const { status: statusCharacterStats, cooldown: cooldownCharacterStats } =
-    await characterStats(character);
-
-  if (cooldownCharacterStats && statusCharacterStats === 200) {
-    console.log(
-      character + " " + "Character Current Cooldown",
-      cooldownCharacterStats
-    );
-    await cooldownDelay(cooldownCharacterStats);
-  }
-
-  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
-    character,
-    { x: 2, y: 0 }
-  );
-
-  if (statusMovement === 200) {
-    await cooldownDelay(cooldownMovement!.total_seconds);
-  }
+  await preSetUp(character);
+  await moveToLocation(character);
 
   mining(character);
 };
@@ -50,6 +33,30 @@ const mining = async (character: string) => {
 
   if (status === 200) {
     setTimeout(() => mining(character), cooldown!.total_seconds * 1000);
+  }
+};
+
+const preSetUp = async (character: string) => {
+  const { status: statusCharacterStats, cooldown: cooldownCharacterStats } =
+    await characterStats(character);
+
+  if (cooldownCharacterStats && statusCharacterStats === 200) {
+    console.log(
+      character + " " + "Character Current Cooldown",
+      cooldownCharacterStats
+    );
+    await cooldownDelay(cooldownCharacterStats);
+  }
+};
+
+const moveToLocation = async (character: string) => {
+  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
+    character,
+    { x: 2, y: 0 }
+  );
+
+  if (statusMovement === 200) {
+    await cooldownDelay(cooldownMovement!.total_seconds);
   }
 };
 

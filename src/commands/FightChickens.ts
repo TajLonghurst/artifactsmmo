@@ -20,8 +20,8 @@ const fighting = async (character: string) => {
     character: characterFight,
   } = await fight(character);
 
-  await cooldownDelay(cooldownFight!.total_seconds);
   console.log("Fought Chicken", statusFight);
+  await cooldownDelay(cooldownFight!.total_seconds);
 
   const totalItems = characterFight?.inventory.reduce(
     (total, item) => total + item.quantity,
