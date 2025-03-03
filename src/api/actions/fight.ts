@@ -1,7 +1,8 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { Character, Cooldown, Fight } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 import { errorCode } from "../../utils/errorCodes";
+import axiosRetry from "axios-retry";
 
 type Data = {
   data: {
@@ -43,7 +44,7 @@ export default async function fight(character: string): Promise<ApiResponse> {
     }
 
     return {
-      status: 2001, // Fallback to 500 if response is missing
+      status: 500,
     };
   }
 }

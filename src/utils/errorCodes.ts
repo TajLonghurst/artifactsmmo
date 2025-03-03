@@ -4,7 +4,7 @@ export const ERROR_CODES = {
   code_invalid_payload: 422,
   code_too_many_requests: 429,
   code_not_found: 404,
-  code_fatal_error: 500,
+  // code_fatal_error: 500,
 
   //# Account Error Codes
   code_token_invalid: 452,
@@ -62,8 +62,8 @@ export const ERROR_CODES = {
   code_bank_full: 462,
 
   //# Maps Error Codes
-  code_map_not_found: 597,
-  code_map_content_not_found: 598,
+  // code_map_not_found: 597,
+  // code_map_content_not_found: 598,
 } as const;
 
 export const errorCode = (status: number) => {

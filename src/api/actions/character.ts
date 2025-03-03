@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
-import { Character, Cooldown } from "../../types/types";
+import { Character } from "../../types/types";
 import { env } from "../../../env";
 import { errorCode } from "../../utils/errorCodes";
+import { applyAxiosRetry } from "../apis";
 
 type Data = {
   data: Character[];
@@ -13,9 +14,22 @@ interface ApiResponse {
   cooldown?: Character["cooldown"];
 }
 
-export default async function character(character: string) {
+const api = axios.create({
+  baseURL: env.BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${env.TOKEN}`,
+  },
+});
+
+export default async function character(
+  character: string
+): Promise<ApiResponse> {
+  applyAxiosRetry(api);
+
   try {
-    const response = await axios.get<Data>("/my/characters", {
+    const response = await api.get<Data>("/my/characters", {
       baseURL: env.BASE_URL,
       headers: {
         "Content-Type": "application/json",

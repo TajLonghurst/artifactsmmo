@@ -33,13 +33,15 @@ const fighting = async (character: string) => {
     0
   );
 
-  if (totalItems === 100) {
+  //TODO: Properly Check max inventory instead of setting number
+
+  if (totalItems! >= 100) {
     console.log("Inventory Maxed", character);
     return;
   }
 
   if (statusFight === 200) {
-    //! To improve this. You need to get the fight details and check if the next hit will kill you. If not then continue
+    //TODO: To improve this. You need to get the fight details and check if the next hit will kill you. If not then continue
     const isLowHealth =
       characterFight?.hp !== undefined &&
       characterFight.hp < 0.3 * characterFight!.max_hp; //If players health is at 30% hp
@@ -47,6 +49,7 @@ const fighting = async (character: string) => {
     if (isLowHealth) {
       await restFighter(character);
     }
+
     await fighting(character);
   }
 };
