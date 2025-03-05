@@ -1,4 +1,4 @@
-import { apiMap as api } from "../apis";
+import { apiBase as api } from "../apis";
 
 interface IMap {
   querys?: {

@@ -3,13 +3,13 @@ import {
   movement,
   character as characterStats,
 } from "../api/actions";
-import { ResourceDrops } from "../types/types";
+import { ItemCraft, ResourceDrops } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
 import { moveToResourceLocation } from "../utils/moveToResourceLocation";
 
 const GatherResource = async (
   character: string,
-  query: { drop: ResourceDrops }
+  query: { drop: ResourceDrops; craft?: ItemCraft }
 ) => {
   await preSetUp(character);
   await moveToResourceLocation({ character, query });
@@ -40,6 +40,17 @@ const gather = async (character: string) => {
 
   if (status === 200) {
     await gather(character);
+  }
+};
+
+const craftResource = async (character: string, craft: ItemCraft) => {
+  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
+    character,
+    { x: 1, y: 5 }
+  );
+
+  if (statusMovement === 200) {
+    await cooldownDelay(cooldownMovement!.total_seconds);
   }
 };
 

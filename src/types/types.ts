@@ -304,3 +304,29 @@ export type Resources = {
   size: number;
   pages: number;
 };
+
+export type SearchItems = {
+  name: string;
+  code: string;
+  level: number;
+  type: string;
+  subtype: string;
+  description: string;
+  effects: Effect[];
+  craft: Craft;
+  tradeable: boolean;
+};
+
+export type ItemCraft =
+  | "copper_ore"
+  | "iron_ore"
+  | "coal"
+  | "sapphire_stone"
+  | "emerald_stone"
+  | "ruby_stone"
+  | "topaz_stone"
+  | "gold_ore"
+  | "piece_of_obsidian"
+  | "diamond_stone"
+  | "strange_ore"
+  | "mithril_ore";

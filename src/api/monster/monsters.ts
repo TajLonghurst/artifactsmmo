@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { errorCode } from "../../utils/errorCodes";
-import { apiMap as api } from "../apis";
+import { apiBase as api } from "../apis";
 import { Monsters } from "../../types/types";
 
 interface IMonster {

@@ -1,9 +1,4 @@
-import {
-  fight,
-  movement,
-  rest,
-  character as characterStats,
-} from "../api/actions";
+import { fight, rest, character as characterStats } from "../api/actions";
 import { MonsterDrops } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
 import { moveToMonsterLocation } from "../utils/moveToMonsterLocation";

@@ -1,4 +1,4 @@
-import { apiMap as api } from "../apis";
+import { apiBase as api } from "../apis";
 
 export default async function mapPosition(xAxis: number, yAxis: number) {
   const body = { x: xAxis, y: yAxis };

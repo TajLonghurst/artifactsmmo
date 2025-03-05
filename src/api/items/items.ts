@@ -1,37 +1,28 @@
 import { AxiosError } from "axios";
 import { errorCode } from "../../utils/errorCodes";
 import { apiBase as api } from "../apis";
-import { Resources } from "../../types/types";
+import { Resources, SearchItems } from "../../types/types";
 
-interface IResources {
+interface IItems {
   querys?: {
     code?: string;
-    max_level?: number;
-    min_level?: number;
-    page?: number;
   };
 }
 
 type ApiResponse = {
-  data?: Resources;
+  data?: SearchItems;
   status: number;
 };
 
-export default async function resources({
+export default async function Items({
   querys = {},
-}: IResources): Promise<ApiResponse> {
-  const params = new URLSearchParams();
-  const { code, max_level, min_level, page = 1 } = querys;
+}: IItems): Promise<ApiResponse> {
+  const { code } = querys;
 
-  if (code) params.append("drop", code);
-  if (max_level) params.append("max_level", String(min_level));
-  if (min_level) params.append("min_level", String(min_level));
-  if (page) params.append("page", String(page));
-
-  const url = `/resources?${params.toString()}`;
+  const url = `/items/${code}`;
 
   try {
-    const response = await api.get<Resources>(url);
+    const response = await api.get<SearchItems>(url);
 
     return { data: response.data, status: response.status };
   } catch (err: any) {

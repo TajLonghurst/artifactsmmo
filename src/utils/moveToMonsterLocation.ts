@@ -26,8 +26,6 @@ export const moveToMonsterLocation = async ({
     return;
   }
 
-  //   console.log(data?.data);
-
   const location = data?.data?.[0].code;
 
   const coordinates = await map({ querys: { content_code: location } });

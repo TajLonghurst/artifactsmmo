@@ -1,4 +1,5 @@
 import { movement } from "../api/actions";
+import Items from "../api/items/items";
 import map from "../api/map/map";
 import resources from "../api/resources/ resources";
 import { ResourceDrops } from "../types/types";
@@ -18,11 +19,11 @@ export const moveToResourceLocation = async ({
   const { drop } = query;
 
   const { data, status: statusResource } = await resources({
-    querys: { drop: drop },
+    querys: { code: drop },
   });
 
   if (statusResource !== 200) {
-    console.log("Failed to find resource drop");
+    console.log("Failed to find resource code");
     return;
   }
 

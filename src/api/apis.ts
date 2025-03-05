@@ -28,7 +28,7 @@ export const applyAxiosRetry = (instance: any) => {
   });
 };
 
-export const apiMap = axios.create({
+export const apiBase = axios.create({
   baseURL: env.BASE_URL,
   headers: {
     "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export const apiMap = axios.create({
     Authorization: "Bearer " + env.TOKEN,
   },
 });
-applyAxiosRetry(apiMap);
+applyAxiosRetry(apiBase);
 
 export const createApiActionInstance = (character: string) => {
   const apiAction = axios.create({
