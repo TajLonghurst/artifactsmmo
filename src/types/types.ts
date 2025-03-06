@@ -176,7 +176,7 @@ interface Craft {
   quantity: number;
 }
 
-export interface UnEquipItem {
+export interface ItemResponse {
   name: string;
   code: string;
   level: number;
@@ -318,15 +318,34 @@ export type SearchItems = {
 };
 
 export type ItemCraft =
-  | "copper_ore"
-  | "iron_ore"
+  | "copper"
+  | "iron"
   | "coal"
-  | "sapphire_stone"
-  | "emerald_stone"
-  | "ruby_stone"
-  | "topaz_stone"
-  | "gold_ore"
-  | "piece_of_obsidian"
-  | "diamond_stone"
-  | "strange_ore"
-  | "mithril_ore";
+  | "sapphire"
+  | "emerald"
+  | "ruby"
+  | "topaz"
+  | "gold"
+  | "obsidian"
+  | "diamond"
+  | "strange"
+  | "mithril"
+  | "ash_plank"
+  | "spruce_plank"
+  | "hardwood_plank"
+  | "dead_wood_plank"
+  | "sap"
+  | "magical_plank"
+  | "magic_sap"
+  | "cursed_plank"
+  | "maple_plank"
+  | "maple_sap";
+
+export type workshop =
+  | "woodcutting"
+  | "cooking"
+  | "weaponcrafting"
+  | "gearcrafting"
+  | "jewelrycrafting"
+  | "alchemy"
+  | "mining";

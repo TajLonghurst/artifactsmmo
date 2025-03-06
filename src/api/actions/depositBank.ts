@@ -1,18 +1,18 @@
 import { AxiosError } from "axios";
-import {
-  Character,
-  Cooldown,
-  ItemResponse as EquipItem,
-  Slot,
-} from "../../types/types";
+import { Character, Cooldown, ItemResponse } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 import { errorCode } from "../../utils/errorCodes";
+
+type bank = {
+  code: string;
+  quantity: number;
+};
 
 type Data = {
   data: {
     cooldown: Cooldown;
-    slot: Slot;
-    item: EquipItem;
+    item: ItemResponse;
+    bank: bank;
     character: Character;
   };
 };
@@ -20,33 +20,31 @@ type Data = {
 interface ApiResponse {
   status: number;
   cooldown?: Cooldown;
-  slot?: Slot;
-  item?: EquipItem;
+  bank?: bank;
+  item?: ItemResponse;
   character?: Character;
 }
 
-export default async function equip(
+export default async function depositBank(
   character: string,
   values: {
-    slot: string;
+    code: string;
     quantity: number;
-    code?: string;
   }
 ): Promise<ApiResponse> {
   const api = createApiActionInstance(character);
   const body = {
-    slo: values.slot,
-    quantity: values.quantity,
     code: values.code,
+    quantity: values.quantity,
   };
 
   try {
-    const response = await api.post<Data>("/action/equip", body);
+    const response = await api.post<Data>("/action/bank/deposit", body);
 
     return {
       status: response.status,
       cooldown: response.data.data.cooldown,
-      slot: response.data.data.slot,
+      bank: response.data.data.bank,
       item: response.data.data.item,
       character: response.data.data.character,
     };
@@ -56,7 +54,7 @@ export default async function equip(
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
       console.error(
-        `Error Equip API: ${character} ${errorKey}` + " " + statusCode
+        `Error Bank Deposit API: ${character} ${errorKey}` + " " + statusCode
       );
     } else {
       console.error("Unexpected Error:", err);

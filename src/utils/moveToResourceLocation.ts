@@ -47,12 +47,3 @@ export const moveToResourceLocation = async ({
     await cooldownDelay(cooldownMovement!.total_seconds);
   }
 };
-
-// I give resource code e.g copper_ore
-// Its searches api GET /resources/?drop={paramsCode} gives code "copper_rocks"
-// Cooldown wait on api
-// using "copper_rocks" searches api GET /maps?code={paramCode} get x and y cords
-// Cooldown wait on api
-// Move to location of rocks
-
-//   console.log(location?.data[0].x, location?.data[0].y);

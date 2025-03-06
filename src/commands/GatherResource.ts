@@ -1,57 +1,67 @@
-import {
-  gathering,
-  movement,
-  character as characterStats,
-} from "../api/actions";
-import { ItemCraft, ResourceDrops } from "../types/types";
+import { gathering, character as characterStats } from "../api/actions";
+import { ItemCraft, ResourceDrops, workshop } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
+import { inventoryManagement } from "../utils/inventoryManagement";
 import { moveToResourceLocation } from "../utils/moveToResourceLocation";
 
 const GatherResource = async (
   character: string,
-  query: { drop: ResourceDrops; craft?: ItemCraft }
+  query: { drop: ResourceDrops; workshop?: workshop; item?: ItemCraft }
 ) => {
   await preSetUp(character);
-  await moveToResourceLocation({ character, query });
+  await moveToResourceLocation({ character, query: { drop: query.drop } });
 
-  gather(character);
+  gather(character, {
+    drop: query.drop,
+    item: query.item,
+    workshop: query.workshop,
+  });
 };
 
-const gather = async (character: string) => {
+const gather = async (
+  character: string,
+  query: { drop: ResourceDrops; workshop?: workshop; item?: ItemCraft }
+) => {
   const {
     status,
     cooldown,
     character: characterGathering,
   } = await gathering(character);
 
+  if (status === 497) {
+    // console.log("Failed");
+    await inventoryManagement(character, {
+      drop: query.drop,
+      craft: query.item,
+      workshop: query.workshop,
+    });
+  }
+
   console.log("Collect Resource", status);
   await cooldownDelay(cooldown!.total_seconds);
 
-  const totalItems = characterGathering?.inventory.reduce(
-    (total, item) => total + item.quantity,
+  const maxInventory = characterGathering!.inventory_max_items;
+
+  const totalItems = characterGathering!.inventory.reduce(
+    (value, item) => value + item.quantity,
     0
   );
 
-  //TODO: Properly Check max inventory instead of setting number
-  if (totalItems! >= 100) {
-    console.log("Inventory Maxed", character);
-    return;
+  if (totalItems >= maxInventory) {
+    await inventoryManagement(character, {
+      drop: query.drop,
+      craft: query.item,
+      workshop: query.workshop,
+    });
+
+    console.log("END OF INV MAGMENT");
   }
 
-  if (status === 200) {
-    await gather(character);
-  }
-};
-
-const craftResource = async (character: string, craft: ItemCraft) => {
-  const { status: statusMovement, cooldown: cooldownMovement } = await movement(
-    character,
-    { x: 1, y: 5 }
-  );
-
-  if (statusMovement === 200) {
-    await cooldownDelay(cooldownMovement!.total_seconds);
-  }
+  gather(character, {
+    drop: query.drop,
+    item: query.item,
+    workshop: query.workshop,
+  });
 };
 
 const preSetUp = async (character: string) => {

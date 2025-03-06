@@ -3,6 +3,8 @@ import { errorCode } from "../../utils/errorCodes";
 import { apiBase as api } from "../apis";
 import { Resources, SearchItems } from "../../types/types";
 
+type Data = { data: SearchItems };
+
 interface IItems {
   querys?: {
     code?: string;
@@ -22,9 +24,9 @@ export default async function Items({
   const url = `/items/${code}`;
 
   try {
-    const response = await api.get<SearchItems>(url);
+    const response = await api.get<Data>(url);
 
-    return { data: response.data, status: response.status };
+    return { data: response.data.data, status: response.status };
   } catch (err: any) {
     if (err instanceof AxiosError) {
       const statusCode = err.response?.status;

@@ -27,7 +27,7 @@ export default async function crafting(
 ): Promise<ApiResponse> {
   try {
     const api = createApiActionInstance(character);
-    const body = { code: values.code, values: values.quantity };
+    const body = { code: values.code, quantity: values.quantity };
 
     const response = await api.post<Data>("/action/crafting", body);
 
