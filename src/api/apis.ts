@@ -7,17 +7,19 @@ import { ERROR_CODES } from "../utils/errorCodes.ts";
 
 export const applyAxiosRetry = (instance: any) => {
   axiosRetry(instance, {
-    retries: 10,
+    retries: 20,
     retryDelay: axiosRetry.exponentialDelay,
     retryCondition(error) {
+      // console.log(error);
       const status = error.response?.status;
 
       //Checks if the error exists
       const exists =
-        status !== undefined &&
-        (Object.values(ERROR_CODES) as number[]).includes(status);
+        status !== undefined
+          ? (Object.values(ERROR_CODES) as number[]).includes(status)
+          : error.response?.status;
 
-      // if error doesn't exists then retry
+      // if error dose exists then retry
       if (!exists) {
         console.error(`Retrying ${instance.defaults.baseURL} API`, status);
         return true;

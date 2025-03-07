@@ -1,5 +1,5 @@
 import { crafting, depositBank, movement } from "../api/actions";
-import Items from "../api/items/items";
+import items from "../api/items/items";
 import { ItemCraft, ResourceDrops, workshop } from "../types/types";
 import { cooldownDelay } from "./cooldownDelay";
 import { moveToResourceLocation } from "./moveToResourceLocation";
@@ -23,7 +23,7 @@ export const inventoryManagement = async (
         query: { workshop },
       });
 
-    const { data, status } = await Items({ querys: { code: craft } });
+    const { data, status } = await items({ querys: { code: craft } });
 
     if (status !== 200) {
       throw new Error("cound't find item");
@@ -74,14 +74,17 @@ export const inventoryManagement = async (
   await cooldownDelay(cooldownMovement!.total_seconds);
 
   //* Find all items in inventory and then filter out the drop.
+
   const inventoryList = characterMovement!.inventory
-    .filter((item) => item.code !== drop)
+    .filter((item) => {
+      const isNotEmpty = item.code !== "" && item.quantity > 0;
+      return (craft && workshop ? item.code !== drop : true) && isNotEmpty;
+    })
     .map((item) => ({
       code: item.code,
       quantity: item.quantity,
     }));
 
-  console.log(inventoryList, "THE DEPOSIT ITEMS LIST");
   //* Loop through all items in inventory and deposit it in bank
   for (const item of inventoryList) {
     const { status: statusDepositBank, cooldown: cooldownDepositBank } =
@@ -94,7 +97,6 @@ export const inventoryManagement = async (
       console.error("Failed to deposit bank item");
     }
 
-    console.log("Bank Deposit", statusDepositBank);
     await cooldownDelay(cooldownDepositBank!.total_seconds);
   }
   //* move back to resource

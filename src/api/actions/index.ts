@@ -7,6 +7,7 @@ import gathering from "./gathering";
 import character from "./character";
 import crafting from "./crafting";
 import depositBank from "./depositBank";
+import withdrawBank from "./withdrawBank";
 
 export {
   movement,
@@ -18,4 +19,5 @@ export {
   character,
   crafting,
   depositBank,
+  withdrawBank,
 };

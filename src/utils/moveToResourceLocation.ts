@@ -1,5 +1,5 @@
 import { movement } from "../api/actions";
-import Items from "../api/items/items";
+import items from "../api/items/items";
 import map from "../api/map/map";
 import resources from "../api/resources/ resources";
 import { ResourceDrops } from "../types/types";

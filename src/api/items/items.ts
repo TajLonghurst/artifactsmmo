@@ -16,7 +16,7 @@ type ApiResponse = {
   status: number;
 };
 
-export default async function Items({
+export default async function items({
   querys = {},
 }: IItems): Promise<ApiResponse> {
   const { code } = querys;

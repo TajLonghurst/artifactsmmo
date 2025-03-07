@@ -3,31 +3,40 @@ import FightMonster from "./commands/FightMonster.ts";
 import GatherResource from "./commands/GatherResource.ts";
 
 const Brains = () => {
-  GatherResource(env.CHARACTER_TWO, {
-    drop: "ash_wood",
-    workshop: "woodcutting",
-    item: "ash_plank",
+  GatherResource(env.CHARACTER, {
+    drop: "iron_ore",
+    workshop: "mining",
+    item: "iron",
   });
   GatherResource(env.CHARACTER_ONE, {
-    drop: "copper_ore",
+    drop: "iron_ore",
     workshop: "mining",
-    item: "copper",
+    item: "iron",
   });
-  GatherResource(env.CHARACTER, {
+  GatherResource(env.CHARACTER_TWO, {
+    drop: "spruce_wood",
+    workshop: "woodcutting",
+    item: "spruce_plank",
+  });
+  GatherResource(env.CHARACTER_THREE, {
+    drop: "spruce_wood",
+    workshop: "woodcutting",
+    item: "spruce_plank",
+  });
+  GatherResource(env.CHARACTER_FOUR, {
     drop: "copper_ore",
     workshop: "mining",
     item: "copper",
   });
   // FightMonster(env.CHARACTER_THREE, { drop: "feather" });
+  //CraftItem(player{drop, drop, drop, drop, workshop, item})
 };
 
 Brains();
 
-//TODO: Mining should also move to mining workshop to craft resource gathered
-
-//TODO: All preSetUp needs to check inventory isn't full
-
 //TODO: Have a crafter take the resources from the bank upgrade them into Items
 
-//Move to mind
-//
+//* CraftItem(player{craftedItem} {delete, quantity})
+//* Start at bank ==> withdraw all drops or items needed ==> move to workshop ==> Craft Item in mass ==> Deposit ? Delete ==> Loop
+
+//*quantity: number | "max";

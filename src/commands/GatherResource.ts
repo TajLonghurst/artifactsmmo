@@ -29,7 +29,6 @@ const gather = async (
   } = await gathering(character);
 
   if (status === 497) {
-    // console.log("Failed");
     await inventoryManagement(character, {
       drop: query.drop,
       craft: query.item,
@@ -53,8 +52,6 @@ const gather = async (
       craft: query.item,
       workshop: query.workshop,
     });
-
-    console.log("END OF INV MAGMENT");
   }
 
   gather(character, {
