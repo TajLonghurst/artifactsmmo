@@ -32,8 +32,8 @@ const Brains = async () => {
   // });
   CraftingItems(
     env.CHARACTER,
-    { itemToCraft: "copper_helmet" },
-    { isRecycle: true, quantity: 1 }
+    { itemToCraft: "ash_plank" },
+    { isRecycle: false }
   );
   // FightMonster(env.CHARACTER_THREE, { drop: "feather" });
   //CraftItem(player{drop, drop, drop, drop, workshop, item})
