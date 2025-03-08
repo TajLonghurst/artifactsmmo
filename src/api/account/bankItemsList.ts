@@ -15,7 +15,7 @@ type Data = {
 
 interface IItems {
   querys?: {
-    content_code?: string;
+    item_code?: string;
     page?: number;
     size?: number;
   };
@@ -29,15 +29,15 @@ type ApiResponse = {
 export default async function bankItemsList({
   querys = {},
 }: IItems): Promise<ApiResponse> {
-  const { content_code, page = 1, size = 50 } = querys;
+  const { item_code, page = 1, size = 50 } = querys;
 
   const params = new URLSearchParams();
 
-  if (content_code) params.append("content_code", content_code);
+  if (item_code) params.append("item_code", item_code);
   if (page) params.append("page", String(page));
   if (size) params.append("size", String(size));
 
-  const url = `/bank/items?${params.toString()}`;
+  const url = `/my/bank/items?${params.toString()}`;
 
   try {
     const response = await api.get<Data>(url);

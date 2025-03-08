@@ -164,7 +164,7 @@ interface Effect {
   value: number;
 }
 
-interface CraftItem {
+export interface CraftItem {
   code: string;
   quantity: number;
 }

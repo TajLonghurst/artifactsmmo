@@ -1,18 +1,26 @@
 import bankItemsList from "../api/account/bankItemsList";
 import {
   character as characterStats,
+  crafting,
   depositBank,
   movement,
   withdrawBank,
 } from "../api/actions";
 import items from "../api/items/items";
-import { Character, Item } from "../types/types";
+import {
+  Character,
+  CraftItem,
+  ItemCraft,
+  SearchItems,
+  workshop,
+} from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
+import { moveToWorkshopLocation } from "../utils/moveToWorkshopLocation";
 
-export const CraftingItems = async (
+const CraftingItems = async (
   character: string,
   query: { itemToCraft: string },
-  settings: { quantity: number | "max"; isDelete: boolean }
+  settings: { quantity: number | "max"; isRecycle: boolean }
 ) => {
   const {
     status: statusCharacterStats,
@@ -32,7 +40,7 @@ export const CraftingItems = async (
   await craftingItem(
     character,
     { itemToCraft: query.itemToCraft },
-    { quantity: settings.quantity, isDelete: settings.isDelete },
+    { quantity: settings.quantity, isRecycle: settings.isRecycle },
     { characterCharacterStats }
   );
 };
@@ -40,12 +48,12 @@ export const CraftingItems = async (
 const craftingItem = async (
   character: string,
   query: { itemToCraft: string },
-  settings: { quantity: number | "max"; isDelete: boolean },
+  settings: { quantity: number | "max"; isRecycle: boolean },
   characterStats: { characterCharacterStats?: Character }
 ) => {
   const { characterCharacterStats } = characterStats;
 
-  const { status: statusItem, data: dataItem } = await items({
+  const { data: dataItem, status: statusItem } = await items({
     querys: { code: query.itemToCraft },
   });
 
@@ -54,24 +62,63 @@ const craftingItem = async (
     return;
   }
 
-  const characterMaxInventory = characterCharacterStats!.inventory_max_items;
-  const itemCraft = dataItem!.craft.items;
+  const itemRecipe = dataItem!.craft.items;
+  const workshopLocation = dataItem!.craft.skill as workshop;
 
-  let totalQuantity = itemCraft.reduce((sum, item) => sum + item.quantity, 0);
-  let totalCrafts: Item[] = [];
+  const resourceChunks = await chunkResourcesBalanced(
+    itemRecipe,
+    characterCharacterStats!
+  );
 
-  // Keep adding until totalQuantity reaches the limit
-  while (totalQuantity <= characterMaxInventory) {
-    totalCrafts = itemCraft.map((item) => ({
-      ...item,
-      quantity: item.quantity + item.quantity,
-    }));
+  for (const list of resourceChunks!) {
+    const currentQuantity = list.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
 
-    totalQuantity = itemCraft.reduce((sum, item) => sum + item.quantity, 0);
+    const individualItem = itemRecipe.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+
+    const craftingQuantity = currentQuantity / individualItem;
+
+    for (const items of list) {
+      const { status: statusWithdrawBank, cooldown: cooldownWithdrawBank } =
+        await withdrawBank(character, {
+          quantity: items.quantity,
+          code: items.code,
+        });
+
+      if (statusWithdrawBank === 200) {
+        await cooldownDelay(cooldownWithdrawBank!.total_seconds);
+      }
+    }
+
+    await moveToWorkshopLocation({
+      character,
+      query: { workshop: workshopLocation },
+    });
+
+    const { status: statusCrafting, cooldown: cooldownCrafting } =
+      await crafting(character, {
+        code: query.itemToCraft,
+        quantity: craftingQuantity,
+      });
+
+    if (statusCrafting === 200)
+      await cooldownDelay(cooldownCrafting!.total_seconds);
+
+    if (settings.isRecycle) {
+      ///Delete
+    }
   }
+};
 
-  //TODO: Check bank invtneory
-
+async function chunkResourcesBalanced(
+  recipe: CraftItem[],
+  characterCharacterStats: Character
+) {
   const { data: dataBankItemsList, status: statsBankItemsList } =
     await bankItemsList({});
 
@@ -79,27 +126,78 @@ const craftingItem = async (
     console.log("Failed to find Bank Items List");
     return;
   }
+  const bankItemList = dataBankItemsList!.data;
 
-  const existingResources = totalCrafts.every((craft) =>
-    dataBankItemsList!.data.some((item) => item.code === craft.code)
+  // Create a map of bank items by their code for easy lookup
+  const bankMap = new Map(
+    bankItemList.map((item) => [item.code, item.quantity])
   );
 
-  const isItemsInBank = existingResources
-    ? dataBankItemsList!.data.filter((item) =>
-        totalCrafts.some((craft) => craft.code === item.code)
-      )
-    : [];
+  // Calculate how many times the item can be crafted based on the available resources
+  let maxCraftable = Infinity;
 
-  if (!isItemsInBank) {
-    console.log("Items aren't in bank");
-    return;
+  // Loop through each item in the recipe and calculate how many times it can be crafted
+  for (const craftItem of recipe) {
+    const availableQuantity = bankMap.get(craftItem.code) || 0;
+    const craftableQuantity = Math.floor(
+      availableQuantity / craftItem.quantity
+    );
+
+    // Update maxCraftable to be the limiting factor
+    maxCraftable = Math.min(maxCraftable, craftableQuantity);
   }
 
-  const loopAbleAmount =
-    isItemsInBank[0].quantity / dataItem!.craft.items[0].quantity;
+  // Define a map to store the total amount of each resource required
+  const maxItems = characterCharacterStats!.inventory_max_items;
 
-  //TODO: withdraw the as many resources that are with in the bank OR only once if settings is set to a number
-};
+  // Calculate total resources needed for crafting
+  const totalRecipeResources: { [key: string]: number } = {};
+
+  for (const craftItem of recipe) {
+    const totalRequired = craftItem.quantity * maxCraftable;
+    if (totalRecipeResources[craftItem.code]) {
+      totalRecipeResources[craftItem.code] += totalRequired;
+    } else {
+      totalRecipeResources[craftItem.code] = totalRequired;
+    }
+  }
+
+  const totalResourcesRequired: { code: string; quantity: number }[] =
+    recipe.map((item) => ({
+      code: item.code,
+      quantity: item.quantity * maxCraftable,
+    }));
+
+  const chunks: Array<Array<{ code: string; quantity: number }>> = [];
+  let remainingResources = [...totalResourcesRequired];
+
+  while (remainingResources.some((res) => res.quantity > 0)) {
+    let currentChunk: { code: string; quantity: number }[] = [];
+    let currentChunkQuantity = 0;
+
+    const maxSetsInChunk = Math.floor(
+      maxItems / recipe.reduce((sum, item) => sum + item.quantity, 0)
+    );
+
+    for (const resource of recipe) {
+      const needed = resource.quantity * maxSetsInChunk;
+      const available = remainingResources.find(
+        (r) => r.code === resource.code
+      )!;
+
+      const quantityToAdd = Math.min(needed, available.quantity);
+
+      currentChunk.push({ code: resource.code, quantity: quantityToAdd });
+      currentChunkQuantity += quantityToAdd;
+
+      available.quantity -= quantityToAdd;
+    }
+
+    chunks.push(currentChunk);
+  }
+
+  return chunks;
+}
 
 const preSteUp = async (
   character: string,
@@ -107,12 +205,8 @@ const preSteUp = async (
 ) => {
   const { characterCharacterStats } = characterStats;
 
-  const isInventoryEmpty = characterCharacterStats!.inventory.filter(
-    (invItem) => {
-      const isNotEmpty = invItem.code !== "" && invItem.quantity > 0;
-      if (isNotEmpty) return [];
-      return true;
-    }
+  const filteredInventory = characterCharacterStats!.inventory.filter(
+    (invItem) => invItem.code !== "" && invItem.quantity !== 0
   );
 
   const { status: statusMovement, cooldown: cooldownMovement } = await movement(
@@ -127,8 +221,8 @@ const preSteUp = async (
     await cooldownDelay(cooldownMovement!.total_seconds);
   }
 
-  if (isInventoryEmpty.length > 0) {
-    for (const item of isInventoryEmpty) {
+  if (filteredInventory.length > 0) {
+    for (const item of filteredInventory) {
       const { cooldown: cooldownDepositBank, status: statusDepositBank } =
         await depositBank(character, {
           code: item.code,
@@ -141,6 +235,8 @@ const preSteUp = async (
     }
   }
 };
+
+export default CraftingItems;
 
 // -------------------------------- PRE SETUP
 //? GET Character API => cooldown & inventory
@@ -184,3 +280,22 @@ const preSteUp = async (
 //? POST Deposit API => deposit all crafts
 //! Cooldown
 /////////////////
+
+//* Find how many items of the needed resource are in bank
+//* divided that by how many times I can with draw that recipe.
+//* Then withdraw the max amount of resources I can hold and loop until I can withdraw no more items that from the bank
+
+// [
+//   [
+//     { code: "copper", quantity: 85 },
+//     { code: "feather", quantity: 34 },
+//   ],
+//   [
+//     { code: "copper", quantity: 85 },
+//     { code: "feather", quantity: 34 },
+//   ],
+//   [
+//     { code: "copper", quantity: 10 },
+//     { code: "feather", quantity: 4 },
+//   ],
+// ]
