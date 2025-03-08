@@ -15,7 +15,7 @@ import { moveToWorkshopLocation } from "../utils/moveToWorkshopLocation";
 const CraftingItems = async (
   character: string,
   query: { itemToCraft: string },
-  settings: { quantity: number | "max"; isRecycle: boolean }
+  settings: { isRecycle: boolean }
 ) => {
   const {
     status: statusCharacterStats,
@@ -35,7 +35,7 @@ const CraftingItems = async (
   await craftingItem(
     character,
     { itemToCraft: query.itemToCraft },
-    { quantity: settings.quantity, isRecycle: settings.isRecycle },
+    { isRecycle: settings.isRecycle },
     { characterCharacterStats }
   );
 };
@@ -43,7 +43,7 @@ const CraftingItems = async (
 const craftingItem = async (
   character: string,
   query: { itemToCraft: string },
-  settings: { quantity: number | "max"; isRecycle: boolean },
+  settings: { isRecycle: boolean },
   characterStats: { characterCharacterStats?: Character }
 ) => {
   const { characterCharacterStats } = characterStats;
