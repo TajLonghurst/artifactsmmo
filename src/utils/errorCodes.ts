@@ -62,8 +62,8 @@ export const ERROR_CODES = {
   code_bank_full: 462,
 
   //# Maps Error Codes
-  // code_map_not_found: 597,
-  // code_map_content_not_found: 598,
+  code_map_not_found: 597,
+  code_map_content_not_found: 598,
 } as const;
 
 export const errorCode = (status: number) => {

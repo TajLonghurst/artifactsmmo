@@ -6,14 +6,9 @@ import {
   movement,
   withdrawBank,
 } from "../api/actions";
+import recycling from "../api/actions/recycling";
 import items from "../api/items/items";
-import {
-  Character,
-  CraftItem,
-  ItemCraft,
-  SearchItems,
-  workshop,
-} from "../types/types";
+import { Character, CraftItem, workshop } from "../types/types";
 import { cooldownDelay } from "../utils/cooldownDelay";
 import { moveToWorkshopLocation } from "../utils/moveToWorkshopLocation";
 
@@ -65,52 +60,117 @@ const craftingItem = async (
   const itemRecipe = dataItem!.craft.items;
   const workshopLocation = dataItem!.craft.skill as workshop;
 
-  const resourceChunks = await chunkResourcesBalanced(
+  let resourceChunks = await chunkResourcesBalanced(
     itemRecipe,
     characterCharacterStats!
   );
 
-  for (const list of resourceChunks!) {
-    const currentQuantity = list.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+  if (!resourceChunks || resourceChunks.length === 0) {
+    console.log("No more resources available to craft.");
+    return; // Exit the loop when resources are exhausted
+  }
 
-    const individualItem = itemRecipe.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+  console.log("resourceChunks", resourceChunks);
 
-    const craftingQuantity = currentQuantity / individualItem;
+  while (resourceChunks && resourceChunks.length > 0) {
+    for (const list of resourceChunks) {
+      const currentQuantity = list.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
 
-    for (const items of list) {
-      const { status: statusWithdrawBank, cooldown: cooldownWithdrawBank } =
-        await withdrawBank(character, {
-          quantity: items.quantity,
-          code: items.code,
+      const individualItem = itemRecipe.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
+
+      const craftingQuantity = Math.floor(currentQuantity / individualItem);
+
+      for (const items of list) {
+        const { status: statusWithdrawBank, cooldown: cooldownWithdrawBank } =
+          await withdrawBank(character, {
+            quantity: items.quantity,
+            code: items.code,
+          });
+
+        if (statusWithdrawBank === 200) {
+          await cooldownDelay(cooldownWithdrawBank!.total_seconds);
+        }
+      }
+
+      await moveToWorkshopLocation({
+        character,
+        query: { workshop: workshopLocation },
+      });
+
+      const { status: statusCrafting, cooldown: cooldownCrafting } =
+        await crafting(character, {
+          code: query.itemToCraft,
+          quantity: craftingQuantity,
         });
 
-      if (statusWithdrawBank === 200) {
-        await cooldownDelay(cooldownWithdrawBank!.total_seconds);
+      if (statusCrafting === 200)
+        await cooldownDelay(cooldownCrafting!.total_seconds);
+
+      if (settings.isRecycle) {
+        /// Recycle
+        const { status: statusRecycling, cooldown: cooldownRecycling } =
+          await recycling(character, {
+            code: query.itemToCraft,
+            quantity: craftingQuantity,
+          });
+
+        if (statusRecycling !== 200) {
+          console.log("failed recycling");
+        }
+        await cooldownDelay(cooldownRecycling!.total_seconds);
+      }
+
+      const {
+        status: statusMovement,
+        cooldown: cooldownMovement,
+        character: characterMovement,
+      } = await movement(character, { x: 4, y: 1 });
+
+      if (statusMovement !== 200) {
+        console.log("failed movement");
+        return;
+      }
+
+      await cooldownDelay(cooldownMovement!.total_seconds);
+
+      const inventoryList = characterMovement!.inventory
+        .filter((item) => item.code !== "" && item.quantity > 0)
+        .map((item) => ({
+          code: item.code,
+          quantity: item.quantity,
+        }));
+
+      //* Loop through all items in inventory and deposit them in the bank
+      for (const item of inventoryList) {
+        const { status: statusDepositBank, cooldown: cooldownDepositBank } =
+          await depositBank(character, {
+            code: item.code,
+            quantity: item.quantity,
+          });
+
+        if (statusDepositBank !== 200) {
+          console.error("Failed to deposit bank item");
+        }
+
+        await cooldownDelay(cooldownDepositBank!.total_seconds);
       }
     }
 
-    await moveToWorkshopLocation({
-      character,
-      query: { workshop: workshopLocation },
-    });
+    // 🔥 Recalculate resources after depositing to check for new crafting opportunities
+    resourceChunks = await chunkResourcesBalanced(
+      itemRecipe,
+      characterCharacterStats!
+    );
 
-    const { status: statusCrafting, cooldown: cooldownCrafting } =
-      await crafting(character, {
-        code: query.itemToCraft,
-        quantity: craftingQuantity,
-      });
-
-    if (statusCrafting === 200)
-      await cooldownDelay(cooldownCrafting!.total_seconds);
-
-    if (settings.isRecycle) {
-      ///Delete
+    if (!resourceChunks || resourceChunks.length === 0) {
+      console.log("No more resources available to craft.");
+      break; // Exit the loop if no new resources are available
     }
   }
 };
@@ -148,7 +208,7 @@ async function chunkResourcesBalanced(
   }
 
   // Define a map to store the total amount of each resource required
-  const maxItems = characterCharacterStats!.inventory_max_items;
+  const maxItems = characterCharacterStats!.inventory_max_items; //! this character stats only comes from API that is only called once. And never called again in the crafting loop
 
   // Calculate total resources needed for crafting
   const totalRecipeResources: { [key: string]: number } = {};

@@ -1,13 +1,7 @@
 import { AxiosError } from "axios";
-import { Character, Cooldown, Details, ItemResponse } from "../../types/types";
+import { Character, Cooldown, Details } from "../../types/types";
 import { createApiActionInstance } from "../apis";
 import { errorCode } from "../../utils/errorCodes";
-import { string } from "zod";
-
-type bank = {
-  code: string;
-  quantity: number;
-};
 
 type Data = {
   data: {
@@ -52,7 +46,7 @@ export default async function recycling(
       const errorKey = statusCode ? errorCode(statusCode) : "Unknown Error";
 
       console.error(
-        `Error Bank Deposit API: ${character} ${errorKey}` + " " + statusCode
+        `Error Recycling API: ${character} ${errorKey}` + " " + statusCode
       );
     } else {
       console.error("Unexpected Error:", err);
