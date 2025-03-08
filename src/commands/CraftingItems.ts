@@ -70,8 +70,6 @@ const craftingItem = async (
     return; // Exit the loop when resources are exhausted
   }
 
-  console.log("resourceChunks", resourceChunks);
-
   while (resourceChunks && resourceChunks.length > 0) {
     for (const list of resourceChunks) {
       const currentQuantity = list.reduce(
