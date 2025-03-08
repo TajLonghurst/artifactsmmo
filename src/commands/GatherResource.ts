@@ -23,30 +23,17 @@ const gather = async (
   query: { drop: ResourceDrops; workshop?: workshop; item?: ItemCraft }
 ) => {
   const {
-    status,
+    status: statusGathering,
     cooldown,
     character: characterGathering,
   } = await gathering(character);
 
-  if (status === 497) {
-    await inventoryManagement(character, {
-      drop: query.drop,
-      craft: query.item,
-      workshop: query.workshop,
-    });
+  if (statusGathering === 200) {
+    console.log("Collect Resource " + character, statusGathering);
+    await cooldownDelay(cooldown!.total_seconds);
   }
 
-  console.log("Collect Resource", status);
-  await cooldownDelay(cooldown!.total_seconds);
-
-  const maxInventory = characterGathering!.inventory_max_items;
-
-  const totalItems = characterGathering!.inventory.reduce(
-    (value, item) => value + item.quantity,
-    0
-  );
-
-  if (totalItems >= maxInventory) {
+  if (statusGathering === 497) {
     await inventoryManagement(character, {
       drop: query.drop,
       craft: query.item,

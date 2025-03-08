@@ -8,7 +8,7 @@ import { cooldownDelay } from "./cooldownDelay";
 interface IMoveToResourceLocation {
   character: string;
   query: {
-    drop: ResourceDrops;
+    drop: string;
   };
 }
 

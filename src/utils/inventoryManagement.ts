@@ -8,7 +8,7 @@ import { moveToWorkshopLocation } from "./moveToWorkshopLocation";
 export const inventoryManagement = async (
   character: string,
   values: {
-    drop: ResourceDrops;
+    drop: string;
     craft?: ItemCraft;
     workshop?: workshop;
   }
