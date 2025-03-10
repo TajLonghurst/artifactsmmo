@@ -1,6 +1,6 @@
 import { crafting, depositBank, movement } from "../api/actions";
 import items from "../api/items/items";
-import { ItemCraft, ResourceDrops, workshop } from "../types/types";
+import { ItemCraft, workshop } from "../types/types";
 import { cooldownDelay } from "./cooldownDelay";
 import { moveToResourceLocation } from "./moveToResourceLocation";
 import { moveToWorkshopLocation } from "./moveToWorkshopLocation";

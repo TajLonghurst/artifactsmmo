@@ -22,11 +22,7 @@ const gather = async (
   character: string,
   query: { drop: ResourceDrops; workshop?: workshop; item?: ItemCraft }
 ) => {
-  const {
-    status: statusGathering,
-    cooldown,
-    character: characterGathering,
-  } = await gathering(character);
+  const { status: statusGathering, cooldown } = await gathering(character);
 
   if (statusGathering === 200) {
     console.log("Collect Resource " + character, statusGathering);
