@@ -6,8 +6,8 @@ import recycling from "./api/actions/recycling.ts";
 import deleteItem from "./api/actions/deleteItem.ts";
 
 const Brains = async () => {
-  FightMonster(env.CHARACTER, { drop: "red_slimeball" });
-  FightMonster(env.CHARACTER_TWO, { drop: "cowhide" });
+  FightMonster(env.CHARACTER, { drop: "mushroom" });
+  FightMonster(env.CHARACTER_TWO, { drop: "blue_slimeball" });
   // GatherResource(env.CHARACTER, {
   //   drop: "iron_ore",
   //   workshop: "mining",
@@ -26,8 +26,6 @@ const Brains = async () => {
   });
   GatherResource(env.CHARACTER_FOUR, {
     drop: "iron_ore",
-    workshop: "mining",
-    item: "iron",
   });
   // CraftingItems(
   //   env.CHARACTER,
@@ -53,3 +51,19 @@ Brains();
 // Taj Taj_Two FIGHTER
 // Taj Taj_One Taj_Four MINER
 // Taj_Two Taj_Three WOOD
+
+// /**
+//  * Adds two numbers together.
+//  *
+//  * @example
+//  * ```ts
+//  * const result = add(2, 3); // result = 5
+//  * ```
+//  *
+//  * @param a - The first number.
+//  * @param b - The second number.
+//  * @returns The sum of `a` and `b`.
+//  */
+// function add(a: number, b: number): number {
+//   return a + b;
+// }
